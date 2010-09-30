@@ -262,12 +262,18 @@ module God
   #           conflicting group name
   #
   # Returns nothing
-  def self.task(klass = Task)
+  def self.task(klass = Task, &block)
     self.internal_init
     
     t = klass.new
+    
+    t.tblock = block if block
     yield(t)
     
+    puts "TBLOCK: #{t.tblock.inspect}"
+    
+    t.name = "#{t.name}-#{t.increment.call}" if t.increment
+      
     # do the post-configuration
     t.prepare
     
@@ -297,6 +303,7 @@ module God
     if t.group
       # ensure group name hasn't been used for a watch already
       if self.watches[t.group]
+        STDERR.puts "Group name already exists!"
         abort "Group name '#{t.group}' already used for a Task"
       end
       

@@ -4,7 +4,7 @@ module God
     
     attr_accessor :name, :uid, :gid, :log, :log_cmd, :err_log, :err_log_cmd,
                   :start, :stop, :restart, :unix_socket, :chroot, :env, :dir,
-                  :stop_timeout, :stop_signal, :umask
+                  :stop_timeout, :stop_signal, :umask, :increment, :tblock
     
     def initialize
       self.log = '/dev/null'

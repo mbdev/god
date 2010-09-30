@@ -25,7 +25,7 @@ module God
       end
       
       def dispatch
-        if %w{load status signal log quit terminate}.include?(@command)
+        if %w{increment decrement load status signal log quit terminate}.include?(@command)
           setup
           send("#{@command}_command")
         elsif %w{start stop restart monitor unmonitor remove}.include?(@command)
@@ -37,6 +37,22 @@ module God
           puts "Command '#{@command}' is not valid. Run 'god --help' for usage"
           abort
         end
+      end
+
+      # 
+      def increment_command
+        group = @args[1]
+        amount = @args[2]
+
+        watch = @server.groups[group].first
+        abort "Watch must have an increment property" if !watch.increment
+        abort "Watch property must be a proc" if !watch.increment.class == Proc
+        tblock = watch.tblock
+        @server.task(Watch) { |x| tblock.call(x) }
+      end
+
+      def decrement_command
+
       end
       
       def load_command
