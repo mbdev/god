@@ -270,8 +270,7 @@ module God
     t.tblock = block if block
     yield(t)
     
-    puts "TBLOCK: #{t.tblock.inspect}"
-    
+    # we need to give the watches some kind of unique name if we're incrementin' stuff
     t.name = "#{t.name}-#{t.increment.call}" if t.increment
       
     # do the post-configuration
