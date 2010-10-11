@@ -95,6 +95,10 @@ module God
     # Enable monitoring
     def monitor
       # start monitoring at the first available of the init or up states
+
+      # lol hack
+      self.metrics[:init] ||= []
+
       if !self.metrics[:init].empty?
         self.move(:init)
       else

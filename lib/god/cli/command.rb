@@ -39,16 +39,17 @@ module God
         end
       end
 
-      # 
       def increment_command
         group = @args[1]
-        amount = @args[2]
 
         watch = @server.groups[group].first
         abort "Watch must have an increment property" if !watch.increment
         abort "Watch property must be a proc" if !watch.increment.class == Proc
         tblock = watch.tblock
-        @server.task(Watch) { |x| tblock.call(x) }
+        @server.watch do |task|
+          tblock.call(task)
+          task.monitor if task.autostart?
+        end
       end
 
       def decrement_command
