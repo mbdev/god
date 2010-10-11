@@ -9,7 +9,7 @@ module God
         
         dispatch
       end
-      
+
       def setup
         # connect to drb unix socket
         DRb.start_service("druby://127.0.0.1:0")
@@ -42,10 +42,13 @@ module God
       def increment_command
         group = @args[1]
 
+        # grab a watch and grab its tblock. I.e. the block passed to this watch in the god config
         watch = @server.groups[group].first
         abort "Watch must have an increment property" if !watch.increment
         abort "Watch property must be a proc" if !watch.increment.class == Proc
         tblock = watch.tblock
+
+        # create a new watch with the stored block
         @server.watch do |task|
           tblock.call(task)
           task.monitor if task.autostart?
@@ -53,9 +56,15 @@ module God
       end
 
       def decrement_command
+        group = @args[1]
 
+        # grab one of the watches, doesn't matter which
+        watch = @server.groups[group].select{|w| w.state != :unmonitored}.first
+
+        watch.unmonitor if watch.state != :unmonitored
+        watch.action(:stop) if watch.alive?        
       end
-      
+
       def load_command
         file = @args[1]
           
